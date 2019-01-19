@@ -3,16 +3,18 @@
   "author": "Lloyd Brookes <75pound@gmail.com>",
   "version": "0.0.0",
   "description": "web-runner",
-  "repository": "https://github.com/75lb/web-runner",
+  "repository": "https://github.com/test-runner-js/web-runner",
   "keywords": [],
   "license": "MIT",
   "bin": {
     "web-runner": "bin/cli.js"
   },
   "engines": {
-    "node": ">=6"
+    "node": ">=8"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "node bin/cli.js test/es5/test.js --scripts https://www.chaijs.com/chai.js node_modules/test-object-model/dist/index.js node_modules/sleep-anywhere/dist/index.js"
+  },
   "dependencies": {
     "dommo": "^0.1.2",
     "local-web-server": "^2.6.1",

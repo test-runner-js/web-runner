@@ -27,7 +27,6 @@ class TestRunnerEl extends HTMLElement {
 
   runnerStart (runner) {
     this.loadTom(runner.tom)
-    console.log('GO')
   }
 
   loadTom (tom) {
@@ -35,7 +34,6 @@ class TestRunnerEl extends HTMLElement {
       const tomEl = dommo(`<tom><span>${test.name}</span> <span></span></tom>`)
       tomEl.style.marginLeft = `${test.level()}em`
       test.on('state', (state, test) => {
-        console.log(test)
         tomEl.children[1].textContent = state
         tomEl.setAttribute('state', state)
       })
