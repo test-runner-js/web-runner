@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-const CliApp = require('../')
-const cli = new CliApp()
+const WebRunnerCli = require('../')
+const cli = new WebRunnerCli()
 cli.start().catch(err => {
   console.error(err.stack)
 })
