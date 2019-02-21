@@ -37,24 +37,35 @@ class WebRunnerCli extends TestRunnerCli {
     const lws = new Lws()
     const server = lws.listen({
       port: 8000,
-      directory: path.resolve(__dirname),
       stack: 'static'
     })
     const browser = await puppeteer.launch({ headless: !options.show })
     const page = (await browser.pages())[0]
+    const fs = require('fs')
+    const html = fs.readFileSync(path.resolve(__dirname, './harness/index.html'), 'utf8')
+    const css = fs.readFileSync(path.resolve(__dirname, './node_modules/test-runner-el/test-runner.css'), 'utf8')
+    const testRunnerCore = fs.readFileSync(path.resolve(__dirname, './node_modules/test-runner-core/dist/index.js'), 'utf8')
+    page.on('console', msg => console.log(msg.text()))
     try {
-      page.on('console', msg => console.log(msg.text()))
-      await page.goto('http://127.0.0.1:8000/harness/')
+      await page.evaluate(async function (html) {
+        const blob = new Blob([ html ], { type: 'text/html' })
+        const url = URL.createObjectURL(blob)
+        location.href = url
+      }, html)
+      await page.waitForNavigation()
+      await page.addStyleTag({ content: css })
       /* load --scripts */
       for (let url of options.scripts || []) {
         if (!isURL(url)) url = path.relative('harness', url)
         await page.addScriptTag({ url })
       }
-      tomPath = path.relative('harness', tomPath)
+      /* load TestRunnerCore */
+      await page.addScriptTag({ content: testRunnerCore })
+      /* load user's TOM */
+      // await page.addScriptTag({ content: tom, type: 'module' })
+      await page.addScriptTag({ url: tomPath, type: 'module' })
       const state = await page.evaluate(async (tomPath) => {
-        const TestRunnerCore = (await import('../node_modules/test-runner-core/index.mjs')).default
         const $ = document.querySelector.bind(document)
-        await import(tomPath)
 
         class DefaultView {
           start (count) {
@@ -87,12 +98,12 @@ class WebRunnerCli extends TestRunnerCli {
           }
         }
 
-        const runner = new TestRunnerCore({ tom: window.tom, view: new DefaultView() })
+        console.log(window.tom)
+        const runner = new TestRunner({ tom: window.tom, view: new DefaultView() })
         $('test-runner').setRunner(runner)
         await runner.start()
         return runner.state
       }, tomPath)
-      console.log('state', state)
     } finally {
       if (!options.show) {
         await browser.close()
