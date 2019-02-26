@@ -30,6 +30,21 @@ class WebRunnerCli extends TestRunnerCli {
     ]))
   }
 
+  async expandGlobs (files) {
+    return files
+    const FileSet = await this.loadModule('file-set')
+    const flatten = await this.loadModule('reduce-flatten')
+    return files
+      .map(glob => {
+        const fileSet = new FileSet(glob)
+        if (fileSet.notExisting.length) {
+          throw new Error('These files do not exist: ' + fileSet.notExisting.join(', '))
+        }
+        return fileSet.files
+      })
+      .reduce(flatten, [])
+  }
+
   async launch (tomPath, options) {
     const puppeteer = require('puppeteer')
     const Lws = require('lws')
@@ -41,29 +56,21 @@ class WebRunnerCli extends TestRunnerCli {
     })
     const browser = await puppeteer.launch({ headless: !options.show })
     const page = (await browser.pages())[0]
-    const fs = require('fs')
-    const html = fs.readFileSync(path.resolve(__dirname, './harness/index.html'), 'utf8')
-    const css = fs.readFileSync(path.resolve(__dirname, './node_modules/test-runner-el/test-runner.css'), 'utf8')
-    const testRunnerCore = fs.readFileSync(path.resolve(__dirname, './node_modules/test-runner-core/dist/index.js'), 'utf8')
+    page.goto('http://localhost:8000/node_modules/web-runner/harness/index.html')
+    await page.waitForNavigation()
     page.on('console', msg => console.log(msg.text()))
     try {
-      await page.evaluate(async function (html) {
-        const blob = new Blob([ html ], { type: 'text/html' })
-        const url = URL.createObjectURL(blob)
-        location.href = url
-      }, html)
-      await page.waitForNavigation()
-      await page.addStyleTag({ content: css })
       /* load --scripts */
-      for (let url of options.scripts || []) {
-        if (!isURL(url)) url = path.relative('harness', url)
-        await page.addScriptTag({ url })
-      }
+      // for (let url of options.scripts || []) {
+      //   if (!isURL(url)) url = path.relative('harness', url)
+      //   await page.addScriptTag({ url })
+      // }
       /* load TestRunnerCore */
-      await page.addScriptTag({ content: testRunnerCore })
+      // await page.addScriptTag({ url: '/node_modules/web-runner/node_modules/test-runner-core/dist/index.js' })
       /* load user's TOM */
+      // const tom = fs.readFileSync(path.resolve(process.cwd(), tomPath), 'utf8')
       // await page.addScriptTag({ content: tom, type: 'module' })
-      await page.addScriptTag({ url: tomPath, type: 'module' })
+      // await page.addScriptTag({ url: tomPath, type: 'module' })
       const state = await page.evaluate(async (tomPath) => {
         const $ = document.querySelector.bind(document)
 

@@ -1,5 +1,18 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+<!--   <head>
+    <meta charset="utf-8">
+    <title>Web test suite</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="../node_modules/test-runner-el/test-runner.css">
+    <script src="../node_modules/test-runner-el/index.mjs" type="module"></script>
+    <style type="text/css">
+      html {
+        font-family: sans-serif;
+        font-size: 16px;
+      }
+    </style>
+  </head> -->
   <head>
     <meta charset="utf-8">
     <title>Web test suite</title>
@@ -13,6 +26,10 @@
         font-size: 16px;
       }
     </style>
+    <link rel="stylesheet" href="/node_modules/web-runner/node_modules/test-runner-el/test-runner.css">
+    <script src="https://www.chaijs.com/chai.js"></script>
+    <script src="/node_modules/web-runner/node_modules/test-runner-core/dist/index.js"></script>
+    <script src="/test/test.mjs" type="module"></script>
   </head>
   <body>
   	<test-runner></test-runner>
