@@ -16,13 +16,13 @@
     "test": "node bin/cli.js test/es5/test.js --scripts https://www.chaijs.com/chai.js node_modules/test-object-model/dist/index.js node_modules/sleep-anywhere/dist/index.js test/es5/something-el.js"
   },
   "dependencies": {
-    "@test-runner/el": "^0.1.0",
+    "@test-runner/el": "^0.1.1",
     "dommo": "^0.1.2",
     "lws": "^1.3.1",
     "lws-static": "^0.5.0",
     "puppeteer": "^1.12.2",
-    "test-object-model": "^0.3.5",
-    "test-runner": "^0.6.0-10",
+    "test-object-model": "^0.3.6",
+    "test-runner": "^0.6.0-11",
     "test-runner-core": "^0.6.0-11"
   },
   "devDependencies": {

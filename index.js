@@ -31,24 +31,15 @@ class WebRunnerCli extends TestRunnerCli {
   }
 
   async expandGlobs (files) {
+    /* disable glob expansion */
     return files
-    const FileSet = await this.loadModule('file-set')
-    const flatten = await this.loadModule('reduce-flatten')
-    return files
-      .map(glob => {
-        const fileSet = new FileSet(glob)
-        if (fileSet.notExisting.length) {
-          throw new Error('These files do not exist: ' + fileSet.notExisting.join(', '))
-        }
-        return fileSet.files
-      })
-      .reduce(flatten, [])
   }
 
   async launch (tomPath, options) {
     const puppeteer = require('puppeteer')
     const Lws = require('lws')
     const path = require('path')
+    const fs = require('fs')
     const lws = new Lws()
     const server = lws.listen({
       port: 8000,
@@ -56,22 +47,44 @@ class WebRunnerCli extends TestRunnerCli {
     })
     const browser = await puppeteer.launch({ headless: !options.show })
     const page = (await browser.pages())[0]
-    page.goto('http://localhost:8000/node_modules/web-runner/harness/index.html')
+    page.on('console', async msg => {
+      console.log(msg.text())
+      // const handle = msg.args()[0]
+      // console.log(handle._remoteObject)
+    })
+    page.on('pageerror', err => {
+      console.error(require('util').inspect(err, { depth: 6, colors: true }))
+    })
+
+    /* what this start URL be? */
+    page.goto('http://localhost:8000/node_modules/@test-runner/web/harness/index.html')
     await page.waitForNavigation()
-    page.on('console', msg => console.log(msg.text()))
+
     try {
-      /* load --scripts */
+      await page.addScriptTag({
+        content: fs.readFileSync(require.resolve('@test-runner/el/dist/index.mjs'), 'utf8'),
+        type: 'module'
+      })
+      await page.addStyleTag({
+        content: fs.readFileSync(require.resolve('@test-runner/el/test-runner.css'), 'utf8')
+      })
+      await page.addScriptTag({
+        content: fs.readFileSync(require.resolve('test-runner-core/dist/index.js'), 'utf8')
+      })
+
+      // /* load --scripts */
       // for (let url of options.scripts || []) {
       //   if (!isURL(url)) url = path.relative('harness', url)
       //   await page.addScriptTag({ url })
       // }
-      /* load TestRunnerCore */
-      // await page.addScriptTag({ url: '/node_modules/web-runner/node_modules/test-runner-core/dist/index.js' })
+
       /* load user's TOM */
-      // const tom = fs.readFileSync(path.resolve(process.cwd(), tomPath), 'utf8')
-      // await page.addScriptTag({ content: tom, type: 'module' })
-      // await page.addScriptTag({ url: tomPath, type: 'module' })
-      const state = await page.evaluate(async (tomPath) => {
+      await page.addScriptTag({ url: path.resolve('/', tomPath), type: 'module' })
+      await page.waitForFunction('window.tom', {
+        timeout: 3000
+      })
+
+      await page.evaluate(async (tomPath) => {
         const $ = document.querySelector.bind(document)
 
         class DefaultView {
@@ -105,11 +118,9 @@ class WebRunnerCli extends TestRunnerCli {
           }
         }
 
-        console.log(window.tom)
         const runner = new TestRunner({ tom: window.tom, view: new DefaultView() })
         $('test-runner').setRunner(runner)
         await runner.start()
-        return runner.state
       }, tomPath)
     } finally {
       if (!options.show) {
