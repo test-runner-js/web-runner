@@ -84,7 +84,7 @@ class WebRunnerCli extends TestRunnerCli {
         timeout: 3000
       })
 
-      await page.evaluate(async (tomPath) => {
+      const state = await page.evaluate(async (tomPath) => {
         const $ = document.querySelector.bind(document)
 
         class DefaultView {
@@ -121,7 +121,9 @@ class WebRunnerCli extends TestRunnerCli {
         const runner = new TestRunner({ tom: window.tom, view: new DefaultView() })
         $('test-runner').setRunner(runner)
         await runner.start()
+        return runner.state
       }, tomPath)
+      if (state === 'fail') process.exitCode = 1
     } finally {
       if (!options.show) {
         await browser.close()
