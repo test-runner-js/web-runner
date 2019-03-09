@@ -71,6 +71,9 @@ class WebRunnerCli extends TestRunnerCli {
       await page.addScriptTag({
         content: fs.readFileSync(require.resolve('test-runner-core/dist/index.js'), 'utf8')
       })
+      await page.addScriptTag({
+        content: fs.readFileSync(require.resolve('@test-runner/default-view/dist/index.js'), 'utf8')
+      })
 
       // /* load --scripts */
       // for (let url of options.scripts || []) {
@@ -86,39 +89,7 @@ class WebRunnerCli extends TestRunnerCli {
 
       const state = await page.evaluate(async (tomPath) => {
         const $ = document.querySelector.bind(document)
-
-        class DefaultView {
-          start (count) {
-            console.log(`\nRunning ${count} tests\n`)
-          }
-          testPass (test, result) {
-            const indent = ' '.repeat(test.level())
-            const parent = test.parent ? test.parent.name : ''
-            console.log(`${indent}\x1b[32m✓\x1b[0m \x1b[35m${parent}\x1b[0m`, test.name, result ? `[${result}]` : '')
-          }
-          testFail (test, err) {
-            const indent = ' '.repeat(test.level())
-            const parent = test.parent ? test.parent.name : ''
-            console.log(`${indent}\x1b[31m⨯\x1b[0m \x1b[35m${parent}\x1b[0m`, test.name)
-            const lines = err.stack.split('\n').map(line => {
-              const indent = ' '.repeat(test.level() + 2)
-              return indent + line
-            })
-            console.log(`\n${lines.join('\n')}\n`)
-          }
-          testSkip (test) {
-            const indent = ' '.repeat(test.level())
-            console.log(`${indent}\x1b[30m-\x1b[0m ${test.name}}`)
-          }
-          testIgnore (test) {
-            const indent = ' '.repeat(test.level())
-          }
-          end (stats) {
-            console.log(`\nCompleted in: ${stats.timeElapsed()}ms. Pass: ${stats.pass}, fail: ${stats.fail}, skip: ${stats.skip}.\n`)
-          }
-        }
-
-        const runner = new TestRunner({ tom: window.tom, view: new DefaultView() })
+        const runner = new TestRunnerCore({ tom: window.tom, view: new DefaultView() })
         $('test-runner').setRunner(runner)
         await runner.start()
         return runner.state
