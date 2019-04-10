@@ -6,6 +6,19 @@
 
 # web-runner
 
+Runs the supplied test-object-model instance in test-runner-core in the browser.
+
+```
+$ web-runner <tom file>
+```
+
+How to make a TOM file isomorphic and suitable for web-runner.
+
+1. Ensure it is written using ES modules
+	1. Use full module file paths
+1. Load an assertion library e.g. chai.assert
+1. Ensure `window.tom` is set
+
 * * *
 
 &copy; 2018-19 Lloyd Brookes \<75pound@gmail.com\>.

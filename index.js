@@ -6,9 +6,7 @@ class WebRunnerCli extends TestRunnerCli {
     this.optionDefinitions = [
       { name: 'files', type: String, multiple: true, defaultOption: true },
       { name: 'help', type: Boolean, alias: 'h' },
-      { name: 'debug', type: Boolean },
-      { name: 'show', type: Boolean },
-      { name: 'scripts', multiple: true }
+      { name: 'show', type: Boolean, description: 'Show the Chromium window' }
     ]
   }
 
@@ -74,12 +72,6 @@ class WebRunnerCli extends TestRunnerCli {
       await page.addScriptTag({
         content: fs.readFileSync(require.resolve('@test-runner/default-view/dist/index.js'), 'utf8')
       })
-
-      // /* load --scripts */
-      // for (let url of options.scripts || []) {
-      //   if (!isURL(url)) url = path.relative('harness', url)
-      //   await page.addScriptTag({ url })
-      // }
 
       /* load user's TOM */
       await page.addScriptTag({ url: path.resolve('/', tomPath), type: 'module' })
