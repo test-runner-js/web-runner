@@ -6,7 +6,13 @@ class WebRunnerCli extends TestRunnerCli {
     this.optionDefinitions = [
       { name: 'files', type: String, multiple: true, defaultOption: true },
       { name: 'help', type: Boolean, alias: 'h' },
-      { name: 'show', type: Boolean, description: 'Show the Chromium window' }
+      { name: 'show', type: Boolean, description: 'Show the Chromium window' },
+      {
+        name: 'tree',
+        type: Boolean,
+        alias: 't',
+        description: 'Print the tree structure of the supplied TOM.'
+      },
     ]
   }
 
@@ -38,8 +44,7 @@ class WebRunnerCli extends TestRunnerCli {
     const Lws = require('lws')
     const path = require('path')
     const fs = require('fs')
-    const lws = new Lws()
-    const server = lws.listen({
+    const lws = Lws.create({
       port: 8000,
       stack: 'static'
     })
@@ -51,53 +56,53 @@ class WebRunnerCli extends TestRunnerCli {
       // console.log(handle._remoteObject)
     })
     page.on('pageerror', err => {
+      console.log('PAGEERROR')
       console.error(require('util').inspect(err, { depth: 6, colors: true }))
     })
 
     /* what this start URL be? */
-    page.goto('http://localhost:8000/node_modules/@test-runner/web/harness/index.html')
+    page.goto('http://localhost:8000/harness/index.html')
     await page.waitForNavigation()
 
-    try {
-      await page.addScriptTag({
-        content: fs.readFileSync(require.resolve('@test-runner/el/dist/index.mjs'), 'utf8'),
-        type: 'module'
-      })
-      await page.addStyleTag({
-        content: fs.readFileSync(require.resolve('@test-runner/el/test-runner.css'), 'utf8')
-      })
-      await page.addScriptTag({
-        content: fs.readFileSync(require.resolve('test-runner-core/dist/index.js'), 'utf8')
-      })
-      await page.addScriptTag({
-        content: fs.readFileSync(require.resolve('@test-runner/default-view/dist/index.js'), 'utf8')
-      })
+    const scriptHandle = await page.addScriptTag({
+      content: `import tom from '${tomPath}'
+      import TestRunner from '/node_modules/test-runner-core/dist/index.mjs'
+      import DefaultView from '/node_modules/@test-runner/default-view/dist/index.mjs'
+      const π = document.createElement.bind(document)
+      const $ = document.querySelector.bind(document)
 
-      /* load user's TOM */
-      await page.addScriptTag({ url: path.resolve('/', tomPath), type: 'module' })
-      await page.waitForFunction('window.tom', {
-        timeout: 3000
-      })
+      const runner = new TestRunner(tom, { view: new DefaultView() })
+      const testRunnerEl = π('test-runner')
+      $('body').appendChild(testRunnerEl)
+      testRunnerEl.setRunner(runner)
+      window.runner = runner`,
+      type: 'module'
+    })
 
-      const state = await page.evaluate(async (tomPath) => {
-        const $ = document.querySelector.bind(document)
-        const runner = new TestRunnerCore({ tom: window.tom, view: new DefaultView() })
-        $('test-runner').setRunner(runner)
-        await runner.start()
-        return runner.state
-      }, tomPath)
-      if (state === 'fail') process.exitCode = 1
-    } finally {
-      if (!options.show) {
-        await browser.close()
-        server.close()
-      }
+    const state = await page.evaluate(async (script) => {
+      return new Promise((resolve, reject) => {
+        setTimeout(function () {
+          runner.start()
+            .then(() => resolve(runner.state))
+            .catch(reject)
+        }, 100)
+      })
+    }, scriptHandle)
+
+    if (state === 'fail') {
+      process.exitCode = 1
+    }
+
+    if (!options.show) {
+      await browser.close()
+      lws.server.close()
     }
   }
 
-  async processFiles (files, options) {
+  async start () {
+    const options = await this.getOptions()
     /* currently, only running the first file supplied is supported */
-    return this.launch(files[0], options)
+    return this.launch(options.files[0], options)
   }
 }
 
