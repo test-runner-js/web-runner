@@ -51,9 +51,12 @@ class WebRunnerCli extends TestRunnerCli {
       /* directory exists */
     }
 
+    const testRunnerPath = path.resolve(require.resolve('test-runner-core'), '../index.mjs')
+    const defaultViewPath = path.resolve(require.resolve('@test-runner/default-view'), '../index.mjs')
+
     const entry = `import tomPromise from '${path.resolve(tomPath)}'
-    import TestRunner from '${path.resolve(__dirname, 'node_modules/test-runner-core/dist/index.mjs')}'
-    import DefaultView from '${path.resolve(__dirname, 'node_modules/@test-runner/default-view/dist/index.mjs')}'
+    import TestRunner from '${testRunnerPath}'
+    import DefaultView from '${defaultViewPath}'
     const π = document.createElement.bind(document)
     const $ = document.querySelector.bind(document)
 
