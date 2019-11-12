@@ -2,6 +2,7 @@ class SomethingEl extends HTMLElement {
   connectedCallback () {
     this.innerHTML = 'something'
   }
+
   one () {
     return 'one'
   }

@@ -1,4 +1,5 @@
 const TestRunnerCli = require('test-runner')
+const path = require('path')
 
 class WebRunnerCli extends TestRunnerCli {
   constructor (options) {
@@ -12,7 +13,7 @@ class WebRunnerCli extends TestRunnerCli {
         type: Boolean,
         alias: 't',
         description: 'Print the tree structure of the supplied TOM.'
-      },
+      }
     ]
   }
 
@@ -39,21 +40,64 @@ class WebRunnerCli extends TestRunnerCli {
     return files
   }
 
+  async createBundle (tomPath) {
+    const rollup = require('rollup')
+    const fs = require('fs')
+    const os = require('os')
+    const tmpDir = path.join(os.tmpdir(), 'web-runner')
+    try {
+      fs.mkdirSync(tmpDir)
+    } catch (err) {
+      /* directory exists */
+    }
+
+    const entry = `import tomPromise from '${path.resolve(tomPath)}'
+    import TestRunner from '${path.resolve(__dirname, 'node_modules/test-runner-core/dist/index.mjs')}'
+    import DefaultView from '${path.resolve(__dirname, 'node_modules/@test-runner/default-view/dist/index.mjs')}'
+    const π = document.createElement.bind(document)
+    const $ = document.querySelector.bind(document)
+
+    async function start () {
+      const tom = await tomPromise
+      const runner = new TestRunner(tom, { view: new DefaultView() })
+      return runner
+    }
+
+    export default start`
+    const entryPath = path.join(tmpDir, 'entry.mjs')
+    const outputPath = path.join(tmpDir, 'output.mjs')
+    fs.writeFileSync(entryPath, entry)
+
+    const bundle = await rollup.rollup({
+      input: entryPath,
+      external: ['assert', 'https://www.chaijs.com/chai.js']
+    })
+    const generated = await bundle.generate({ format: 'esm' })
+    fs.writeFileSync(outputPath, generated.output[0].code)
+  }
+
   async launch (tomPath, options) {
+    const os = require('os')
     const puppeteer = require('puppeteer')
     const Lws = require('lws')
-    const path = require('path')
     const fs = require('fs')
+
+    const tmpDir = path.join(os.tmpdir(), 'web-runner')
+    const port = 7357
     const lws = Lws.create({
-      port: 8000,
-      stack: 'static'
+      port,
+      stack: 'lws-static',
+      moduleDir: [__dirname],
+      directory: tmpDir
     })
+
     const browser = await puppeteer.launch({ headless: !options.show })
     const page = (await browser.pages())[0]
     page.on('console', async msg => {
-      console.log(msg.text())
-      // const handle = msg.args()[0]
-      // console.log(handle._remoteObject)
+      const text = msg.text()
+      if (!/404/.test(text)) {
+        console.log(text)
+      }
     })
     page.on('pageerror', err => {
       console.log('PAGEERROR')
@@ -61,33 +105,17 @@ class WebRunnerCli extends TestRunnerCli {
     })
 
     /* what this start URL be? */
-    page.goto('http://localhost:8000/harness/index.html')
+    page.goto(`http://localhost:${port}/`)
     await page.waitForNavigation()
 
-    const scriptHandle = await page.addScriptTag({
-      content: `import tom from '${tomPath}'
-      import TestRunner from '/node_modules/test-runner-core/dist/index.mjs'
-      import DefaultView from '/node_modules/@test-runner/default-view/dist/index.mjs'
-      const π = document.createElement.bind(document)
-      const $ = document.querySelector.bind(document)
-
-      const runner = new TestRunner(tom, { view: new DefaultView() })
-      const testRunnerEl = π('test-runner')
-      $('body').appendChild(testRunnerEl)
-      testRunnerEl.setRunner(runner)
-      window.runner = runner`,
-      type: 'module'
+    await this.createBundle(tomPath)
+    const outputPath = path.join(tmpDir, 'output.mjs')
+    const state = await page.evaluate(async () => {
+      const getRunner = await import('./output.mjs')
+      const runner = await getRunner.default()
+      await runner.start()
+      return runner.state
     })
-
-    const state = await page.evaluate(async (script) => {
-      return new Promise((resolve, reject) => {
-        setTimeout(function () {
-          runner.start()
-            .then(() => resolve(runner.state))
-            .catch(reject)
-        }, 100)
-      })
-    }, scriptHandle)
 
     if (state === 'fail') {
       process.exitCode = 1
