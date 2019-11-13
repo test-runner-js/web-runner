@@ -4,17 +4,11 @@ const path = require('path')
 class WebRunnerCli extends TestRunnerCli {
   constructor (options) {
     super(options)
-    this.optionDefinitions = [
-      { name: 'files', type: String, multiple: true, defaultOption: true },
-      { name: 'help', type: Boolean, alias: 'h' },
-      { name: 'show', type: Boolean, description: 'Show the Chromium window' },
-      {
-        name: 'tree',
-        type: Boolean,
-        alias: 't',
-        description: 'Print the tree structure of the supplied TOM.'
-      }
-    ]
+    this.optionDefinitions.push({
+      name: 'show',
+      type: Boolean,
+      description: 'Show the Chromium window'
+    })
   }
 
   async printUsage () {
@@ -128,6 +122,8 @@ class WebRunnerCli extends TestRunnerCli {
       await browser.close()
       lws.server.close()
     }
+
+    return state
   }
 
   async start () {
