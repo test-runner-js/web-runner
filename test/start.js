@@ -18,3 +18,4 @@ tom.test('single file run: pass', async function () {
 
 tom.test('test --silent')
 tom.test('test --oneline')
+tom.test('multiple tom input files')
