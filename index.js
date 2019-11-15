@@ -36,6 +36,7 @@ class WebRunnerCli extends TestRunnerCli {
 
   async createBundle (tomPath) {
     const rollup = require('rollup')
+    const resolve = require('rollup-plugin-node-resolve')
     const fs = require('fs')
     const os = require('os')
     const tmpDir = path.join(os.tmpdir(), 'web-runner')
@@ -67,7 +68,8 @@ class WebRunnerCli extends TestRunnerCli {
 
     const bundle = await rollup.rollup({
       input: entryPath,
-      external: ['assert', 'https://www.chaijs.com/chai.js']
+      external: ['assert', 'https://www.chaijs.com/chai.js'],
+      plugins: [resolve()]
     })
     const generated = await bundle.generate({ format: 'esm' })
     fs.writeFileSync(outputPath, generated.output[0].code)
