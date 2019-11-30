@@ -9,6 +9,8 @@ class WebRunnerCli extends TestRunnerCli {
       type: Boolean,
       description: 'Show the Chromium window'
     })
+    const os = require('os')
+    this.tmpDir = path.join(os.tmpdir(), 'web-runner')
   }
 
   async printUsage () {
@@ -34,60 +36,94 @@ class WebRunnerCli extends TestRunnerCli {
     return files
   }
 
-  async createBundle (tomPath) {
+  async createBundle (tomFiles) {
     const rollup = require('rollup')
     const resolve = require('rollup-plugin-node-resolve')
     const fs = require('fs')
     const os = require('os')
-    const tmpDir = path.join(os.tmpdir(), 'web-runner')
+
     try {
-      fs.mkdirSync(tmpDir)
+      fs.mkdirSync(this.tmpDir)
     } catch (err) {
       /* directory exists */
     }
 
     const testRunnerPath = path.resolve(require.resolve('test-runner-core'), '../index.mjs')
     const defaultViewPath = path.resolve(require.resolve('@test-runner/default-view'), '../index.mjs')
+    const TomPath = path.resolve(require.resolve('test-object-model'), '../index.mjs')
 
-    const entry = `import tomPromise from '${path.resolve(tomPath)}'
+    let entry = ''
+    let toms = ''
+    for (const [i, tomFile] of tomFiles.entries()) {
+      const path = require('path')
+      const extname = path.extname(tomFile)
+      const basename = path.basename(tomFile, extname)
+      entry += `import tomPromise${i} from '${path.resolve(tomFile)}'\n`
+      toms += `[await tomPromise${i}, '${basename}'],\n`
+    }
+    entry += `
     import TestRunner from '${testRunnerPath}'
     import DefaultView from '${defaultViewPath}'
-    const π = document.createElement.bind(document)
-    const $ = document.querySelector.bind(document)
+    import Tom from '${TomPath}'
+
+    async function getTom (options) {
+      const toms = [
+        ${toms}
+      ]
+      /* load and name tom files */
+      for (const tom of toms) {
+        if (tom[0]) {
+          if (tom[0].name === 'tom') {
+            tom[0].name = tom[1]
+          }
+        } else {
+          throw new Error('No TOM exported: ')
+        }
+      }
+      const name = 'web-runner'
+      return Tom.combine(toms.map(t => t[0]), name, options)
+    }
 
     async function start () {
-      const tom = await tomPromise
+      const tom = await getTom()
       const runner = new TestRunner(tom, { view: new DefaultView() })
       return runner
     }
 
     export default start`
-    const entryPath = path.join(tmpDir, 'entry.mjs')
-    const outputPath = path.join(tmpDir, 'output.mjs')
+
+    const entryPath = path.join(this.tmpDir, 'entry.mjs')
+    const outputPath = path.join(this.tmpDir, 'output.mjs')
     fs.writeFileSync(entryPath, entry)
 
     const bundle = await rollup.rollup({
       input: entryPath,
-      external: ['assert', 'https://www.chaijs.com/chai.js'],
-      plugins: [resolve()]
+      external: [...require('module').builtinModules, 'https://www.chaijs.com/chai.js'],
+      inlineDynamicImports: true,
+      plugins: [resolve({
+        preferBuiltins: true
+      })]
     })
-    const generated = await bundle.generate({ format: 'esm' })
+    const generated = await bundle.generate({
+      format: 'esm',
+      // sourcemap: 'inline'
+    })
     fs.writeFileSync(outputPath, generated.output[0].code)
   }
 
-  async launch (tomPath, options) {
-    const os = require('os')
+  async launch (tomFiles, options) {
     const puppeteer = require('puppeteer')
     const Lws = require('lws')
     const fs = require('fs')
 
-    const tmpDir = path.join(os.tmpdir(), 'web-runner')
+    await this.createBundle(tomFiles)
+
     const port = 7357
     const lws = Lws.create({
       port,
       stack: 'lws-static',
       moduleDir: [__dirname],
-      directory: tmpDir
+      directory: this.tmpDir
     })
 
     const browser = await puppeteer.launch({ headless: !options.show })
@@ -101,14 +137,15 @@ class WebRunnerCli extends TestRunnerCli {
     page.on('pageerror', err => {
       console.log('PAGEERROR')
       console.error(require('util').inspect(err, { depth: 6, colors: true }))
+      browser.close()
+      lws.server.close()
     })
 
     /* what this start URL be? */
     page.goto(`http://localhost:${port}/`)
     await page.waitForNavigation()
 
-    await this.createBundle(tomPath)
-    const outputPath = path.join(tmpDir, 'output.mjs')
+    const outputPath = path.join(this.tmpDir, 'output.mjs')
     const state = await page.evaluate(async () => {
       const getRunner = await import('./output.mjs')
       const runner = await getRunner.default()
@@ -129,9 +166,10 @@ class WebRunnerCli extends TestRunnerCli {
   }
 
   async start () {
+    /* shouldn't need this: */
+    await this.getAllOptionDefinitions()
     const options = await this.getOptions()
-    /* currently, only running the first file supplied is supported */
-    return this.launch(options.files[0], options)
+    return this.launch(options.files, options)
   }
 }
 
