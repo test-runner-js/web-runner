@@ -6,7 +6,7 @@
 
 ***This project and documentation are a work in progress***.
 
-# @test-runner/web
+# web-runner
 
 Runs the supplied test suite in a headless browser (Chromium).
 
@@ -53,6 +53,12 @@ Start: 2 tests loaded
  ✓ array-back arrayify()
 
 Completed in 16ms. Pass: 2, fail: 0, skip: 0.
+```
+
+## Install
+
+```
+$ npm install --save-dev @test-runner/web
 ```
 
 * * *
