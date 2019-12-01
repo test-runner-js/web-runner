@@ -24,7 +24,7 @@
     "puppeteer": "^2.0.0",
     "rollup": "^1.27.6",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "test-runner": "^0.8.6",
+    "test-runner": "^0.8.7",
     "test-runner-core": "^0.8.2"
   },
   "devDependencies": {
