@@ -8,20 +8,20 @@
 
 # @test-runner/web
 
-Runs the supplied test-object-model instance in the browser (Chromium).
+Runs the supplied test suite in a headless browser (Chromium).
 
 ```
-$ web-runner <tom file>
+$ web-runner [<options>] file ...
 ```
 
 ## Synopsis
 
-Example of an isomorphic test object model. This file will run natively without transpilation in both Nodejs and the browser.
+Example of an isomorphic [test model](https://github.com/test-runner-js/test-object-model). This file will run natively without transpilation in both Nodejs and the browser.
 
 ```js
-import Tom from './node_modules/test-object-model/dist/index.mjs'
+import Tom from 'test-object-model'
 import arrayify from './index.mjs'
-import getAssert from './node_modules/isomorphic-assert/index.mjs'
+import getAssert from 'isomorphic-assert'
 
 async function getTom () {
   const a = await getAssert()
