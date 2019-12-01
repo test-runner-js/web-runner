@@ -10,7 +10,7 @@
     "web-runner": "bin/cli.js"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=10"
   },
   "scripts": {
     "test": "test-runner test/*.js",
