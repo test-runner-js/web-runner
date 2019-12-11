@@ -17,15 +17,15 @@
     "start": "lws --stack static"
   },
   "dependencies": {
-    "@test-runner/default-view": "^0.5.1",
+    "@test-runner/default-view": "^0.5.2",
     "@test-runner/el": "^0.1.1",
     "lws": "^2.0.8",
     "lws-static": "^1.1.3",
     "puppeteer": "^2.0.0",
-    "rollup": "^1.27.6",
+    "rollup": "^1.27.9",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "test-runner": "^0.8.7",
-    "test-runner-core": "^0.8.2"
+    "test-runner": "^0.8.9",
+    "test-runner-core": "^0.8.6"
   },
   "devDependencies": {
     "sleep-anywhere": "^1.1.3"
