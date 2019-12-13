@@ -9,6 +9,8 @@ class WebRunnerCli extends TestRunnerCli {
       type: Boolean,
       description: 'Show the Chromium window'
     })
+    const treeIndex = this.optionDefinitions.findIndex(i => i.name === 'tree')
+    this.optionDefinitions.splice(treeIndex, 1)
     const os = require('os')
     this.tmpDir = path.join(os.tmpdir(), 'web-runner')
   }
@@ -22,18 +24,21 @@ class WebRunnerCli extends TestRunnerCli {
       },
       {
         header: 'Synopsis',
-        content: '$ web-runner <options> {underline file} {underline ...}'
+        content: '$ web-runner [<options>] {underline file} {underline ...}'
       },
       {
         header: 'Options',
-        optionList: this.optionDefinitions
+        optionList: this.optionDefinitions,
+        hide: 'files'
+      },
+      {
+        header: 'View options',
+        optionList: this.viewOptionDefinitions
+      },
+      {
+        content: 'For more information see: {underline https://github.com/test-runner-js/web-runner}'
       }
     ]))
-  }
-
-  async expandGlobs (files) {
-    /* disable glob expansion */
-    return files
   }
 
   async createBundle (tomFiles) {
@@ -166,10 +171,31 @@ class WebRunnerCli extends TestRunnerCli {
   }
 
   async start () {
-    /* shouldn't need this: */
     await this.getAllOptionDefinitions()
     const options = await this.getOptions()
-    return this.launch(options.files, options)
+
+    /* --help */
+    if (options.help) {
+      return this.printUsage()
+
+    /* --version */
+    } else if (options.version) {
+      return this.printVersion()
+
+    /* --files */
+    } else {
+      if (options.files && options.files.length) {
+        const files = await this.expandGlobs(options.files)
+        if (files.length) {
+          return this.launch(files, options)
+        } else {
+          this.errorLog('one or more input files required')
+          return this.printUsage()
+        }
+      } else {
+        return this.printUsage()
+      }
+    }
   }
 }
 
