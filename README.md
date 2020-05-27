@@ -1,12 +1,13 @@
-[![view on npm](https://img.shields.io/npm/v/@test-runner/web.svg)](https://www.npmjs.org/package/@test-runner/web)
-[![npm module downloads](https://img.shields.io/npm/dt/@test-runner/web.svg)](https://www.npmjs.org/package/@test-runner/web)
+[![view on npm](https://badgen.net/npm/v/@test-runner/web)](https://www.npmjs.org/package/@test-runner/web)
+[![npm module downloads](https://badgen.net/npm/dt/@test-runner/web)](https://www.npmjs.org/package/@test-runner/web)
+[![Gihub repo dependents](https://badgen.net/github/dependents-repo/test-runner-js/web-runner)](https://github.com/test-runner-js/web-runner/network/dependents?dependent_type=REPOSITORY)
+[![Gihub package dependents](https://badgen.net/github/dependents-pkg/test-runner-js/web-runner)](https://github.com/test-runner-js/web-runner/network/dependents?dependent_type=PACKAGE)
 [![Build Status](https://travis-ci.org/test-runner-js/web-runner.svg?branch=master)](https://travis-ci.org/test-runner-js/web-runner)
-[![Dependency Status](https://badgen.net/david/dep/test-runner-js/web-runner)](https://david-dm.org/test-runner-js/web-runner)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](https://github.com/feross/standard)
 
 ***This project and documentation are a work in progress***.
 
-# web-runner
+# @test-runner/web
 
 Runs the supplied test suite in a headless browser (Chromium).
 
@@ -63,4 +64,4 @@ $ npm install --save-dev @test-runner/web
 
 * * *
 
-&copy; 2018-19 Lloyd Brookes \<75pound@gmail.com\>.
+&copy; 2019-20 Lloyd Brookes \<75pound@gmail.com\>.
