@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8">
+    <title>web-runner UI</title>
+    <link rel="stylesheet" href="/node_modules/@reusable-web/global-theme/global.css">
+    <script src="/node_modules/@test-runner/el/dist/index.mjs" type="module"></script>
+    <link  href="/node_modules/@test-runner/el/test-runner.css" rel="stylesheet">
+    <style type="text/css">
+      test-runner { display: block; }
+    </style>
+  </head>
+  <body>
+    <h1>web-runner</h1>
+    <test-runner></test-runner>
+  </body>
+</html>
+
+<!-- <script type="module">
+import TestRunnerCore from '/node_modules/@test-runner/core/dist/index.mjs'
+import tom from '/tom-bundle.mjs'
+const runner = new TestRunnerCore(tom)
+document.querySelector('test-runner').setRunner(runner)
+runner.start()
+</script>
+ -->

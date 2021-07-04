@@ -7,33 +7,41 @@
   "keywords": [],
   "license": "MIT",
   "bin": {
-    "web-runner": "bin/cli.js"
+    "web-runner": "bin/cli.mjs"
+  },
+  "exports": {
+    "import": "./index.mjs",
+    "require": "./dist/index.cjs"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=14"
   },
   "scripts": {
-    "test": "test-runner test/*.js",
-    "start": "lws --stack static"
+    "test": "test-runner test/*.mjs"
   },
   "dependencies": {
+    "@reusable-web/global-theme": "^0.1.2",
+    "@rollup/plugin-commonjs": "^19.0.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "@test-runner/core": "^0.10.0",
     "@test-runner/default-view": "^0.5.4",
-    "@test-runner/el": "^0.1.1",
+    "@test-runner/el": "^0.2.0",
+    "@test-runner/tom": "^0.8.0",
+    "current-module-paths": "^1.0.0",
     "lws": "^3.1.0",
     "lws-static": "^2.0.0",
-    "puppeteer": "^3.1.0",
-    "rollup": "^2.10.9",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "test-runner": "^0.8.13",
-    "test-runner-core": "^0.8.6"
+    "puppeteer": "^10.1.0",
+    "rollup": "^2.52.7",
+    "test-runner": "^0.9.6"
   },
   "devDependencies": {
+    "isomorphic-assert": "^0.2.0",
     "sleep-anywhere": "^1.1.3"
   },
   "files": [
-    "index.js",
-    "bin/cli.js",
-    "harness"
+    "index.mjs",
+    "bin",
+    "ui"
   ],
   "standard": {
     "ignore": [

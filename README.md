@@ -24,22 +24,18 @@ import Tom from 'test-object-model'
 import arrayify from './index.mjs'
 import getAssert from 'isomorphic-assert'
 
-async function getTom () {
-  const a = await getAssert()
-  const tom = new Tom('array-back')
+const a = await getAssert()
+const tom = new Tom('array-back')
 
-  tom.test('arrayify()', function () {
-    a.deepEqual(arrayify(undefined), [])
-    a.deepEqual(arrayify(null), [null])
-    a.deepEqual(arrayify(0), [0])
-    a.deepEqual(arrayify([1, 2]), [1, 2])
-    a.deepEqual(arrayify(new Set([1, 2])), [1, 2])
-  })
+tom.test('arrayify()', function () {
+  a.deepEqual(arrayify(undefined), [])
+  a.deepEqual(arrayify(null), [null])
+  a.deepEqual(arrayify(0), [0])
+  a.deepEqual(arrayify([1, 2]), [1, 2])
+  a.deepEqual(arrayify(new Set([1, 2])), [1, 2])
+})
 
-  return tom
-}
-
-export default getTom()
+export default tom
 ```
 
 Example output.
@@ -64,4 +60,4 @@ $ npm install --save-dev @test-runner/web
 
 * * *
 
-&copy; 2019-20 Lloyd Brookes \<75pound@gmail.com\>.
+&copy; 2019-21 Lloyd Brookes \<75pound@gmail.com\>.
