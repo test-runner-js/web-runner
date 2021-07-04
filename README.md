@@ -2,7 +2,7 @@
 [![npm module downloads](https://badgen.net/npm/dt/@test-runner/web)](https://www.npmjs.org/package/@test-runner/web)
 [![Gihub repo dependents](https://badgen.net/github/dependents-repo/test-runner-js/web-runner)](https://github.com/test-runner-js/web-runner/network/dependents?dependent_type=REPOSITORY)
 [![Gihub package dependents](https://badgen.net/github/dependents-pkg/test-runner-js/web-runner)](https://github.com/test-runner-js/web-runner/network/dependents?dependent_type=PACKAGE)
-[![Build Status](https://travis-ci.org/test-runner-js/web-runner.svg?branch=master)](https://travis-ci.org/test-runner-js/web-runner)
+[![Node.js CI](https://github.com/test-runner-js/web-runner/actions/workflows/node.js.yml/badge.svg)](https://github.com/test-runner-js/web-runner/actions/workflows/node.js.yml)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](https://github.com/feross/standard)
 
 ***This project and documentation are a work in progress***.
@@ -20,7 +20,7 @@ $ web-runner [<options>] file ...
 Example of an isomorphic [test model](https://github.com/test-runner-js/test-object-model). This file will run natively without transpilation in both Nodejs and the browser.
 
 ```js
-import Tom from 'test-object-model'
+import Tom from '@test-runner/tom'
 import arrayify from './index.mjs'
 import getAssert from 'isomorphic-assert'
 
