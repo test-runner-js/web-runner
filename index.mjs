@@ -1,6 +1,7 @@
 import TestRunnerCli from 'test-runner'
 import { builtinModules } from 'module'
 import currentModulePaths from 'current-module-paths'
+import path from 'path'
 
 const { __dirname } = currentModulePaths(import.meta.url)
 
@@ -95,9 +96,9 @@ class WebRunnerCli extends TestRunnerCli {
     const lws = Lws.create({
       port,
       stack: [TomBundle, LwsStatic],
-      directory: __dirname
+      directory: path.resolve(__dirname, 'ui')
     })
-    await page.goto(`http://localhost:${port}/ui/index.html`)
+    await page.goto(`http://localhost:${port}/index.html`)
 
     page.on('console', async msg => {
       const text = msg.text()

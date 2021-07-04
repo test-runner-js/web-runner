@@ -20,13 +20,8 @@
     "test": "test-runner test/*.mjs"
   },
   "dependencies": {
-    "@reusable-web/global-theme": "^0.1.2",
     "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
-    "@test-runner/core": "^0.10.0",
-    "@test-runner/default-view": "^0.5.4",
-    "@test-runner/el": "^0.2.0",
-    "@test-runner/tom": "^0.8.0",
     "current-module-paths": "^1.0.0",
     "lws": "^3.1.0",
     "lws-static": "^2.0.0",
@@ -35,8 +30,7 @@
     "test-runner": "^0.9.6"
   },
   "devDependencies": {
-    "isomorphic-assert": "^0.2.0",
-    "sleep-anywhere": "^1.1.3"
+    "@test-runner/tom": "^0.8.0"
   },
   "files": [
     "index.mjs",

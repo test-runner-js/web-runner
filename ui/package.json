@@ -1,0 +1,13 @@
+{
+  "name": "web-runner-ui",
+  "author": "Lloyd Brookes <75pound@gmail.com>",
+  "version": "0.0.0",
+  "description": "web-runner-ui",
+  "repository": "https://github.com/75lb/web-runner-ui",
+  "dependencies": {
+    "@reusable-web/global-theme": "^0.1.2",
+    "@test-runner/core": "^0.10.0",
+    "@test-runner/default-view": "^0.6.0",
+    "@test-runner/el": "^0.2.0"
+  }
+}
