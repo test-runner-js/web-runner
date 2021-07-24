@@ -121,7 +121,9 @@ class WebRunnerCli extends TestRunnerCli {
     const state = await page.evaluate(async (show) => {
       const TestRunnerCore = (await import('/node_modules/@test-runner/core/dist/index.mjs')).default
       const DefaultView = (await import('/node_modules/@test-runner/default-view/dist/index.mjs')).default
-      const tom = (await import('/tom-bundle.mjs')).default
+      let tom = (await import('/tom-bundle.mjs')).default
+      /* TestRunnerCore will accept a Promise but not a Puppeteer `JSHandle@promise`, so resolve it first. */
+      tom = await tom
       let runner
       if (show) {
         runner = new TestRunnerCore(tom)
