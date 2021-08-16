@@ -7,27 +7,24 @@
   "keywords": [],
   "license": "MIT",
   "bin": {
-    "web-runner": "bin/cli.mjs"
+    "web-runner": "./bin/cli.mjs"
   },
-  "exports": {
-    "import": "./index.mjs",
-    "require": "./dist/index.cjs"
-  },
+  "exports": "./index.mjs",
   "engines": {
-    "node": ">=14"
+    "node": ">=12.17"
   },
   "scripts": {
     "test": "test-runner test/*.mjs"
   },
   "dependencies": {
-    "@rollup/plugin-commonjs": "^19.0.0",
-    "@rollup/plugin-node-resolve": "^13.0.0",
-    "current-module-paths": "^1.0.0",
-    "lws": "^3.1.0",
-    "lws-static": "^2.0.0",
-    "puppeteer": "^10.1.0",
-    "rollup": "^2.52.7",
-    "test-runner": "^0.9.6"
+    "@rollup/plugin-commonjs": "^20.0.0",
+    "@rollup/plugin-node-resolve": "^13.0.4",
+    "current-module-paths": "^1.1.0",
+    "lws": "^4.1.0",
+    "lws-static": "^3.1.0",
+    "puppeteer": "^10.2.0",
+    "rollup": "^2.56.2",
+    "test-runner": "^0.9.8"
   },
   "devDependencies": {
     "@test-runner/tom": "^0.8.0"

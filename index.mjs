@@ -93,7 +93,7 @@ class WebRunnerCli extends TestRunnerCli {
         }
       }
     }
-    const lws = Lws.create({
+    const lws = await Lws.create({
       port,
       stack: [TomBundle, LwsStatic],
       directory: path.resolve(__dirname, 'ui')
