@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import WebRunnerCli from '@test-runner/web'
 import util from 'util'
 util.inspect.defaultOptions.depth = 6
