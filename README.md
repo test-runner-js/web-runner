@@ -1,5 +1,5 @@
-[![view on npm](https://badgen.net/npm/v/@test-runner/web)](https://www.npmjs.org/package/@test-runner/web)
-[![npm module downloads](https://badgen.net/npm/dt/@test-runner/web)](https://www.npmjs.org/package/@test-runner/web)
+[![view on npm](https://badgen.net/npm/v/web-runner)](https://www.npmjs.org/package/web-runner)
+[![npm module downloads](https://badgen.net/npm/dt/web-runner)](https://www.npmjs.org/package/web-runner)
 [![Gihub repo dependents](https://badgen.net/github/dependents-repo/test-runner-js/web-runner)](https://github.com/test-runner-js/web-runner/network/dependents?dependent_type=REPOSITORY)
 [![Gihub package dependents](https://badgen.net/github/dependents-pkg/test-runner-js/web-runner)](https://github.com/test-runner-js/web-runner/network/dependents?dependent_type=PACKAGE)
 [![Node.js CI](https://github.com/test-runner-js/web-runner/actions/workflows/node.js.yml/badge.svg)](https://github.com/test-runner-js/web-runner/actions/workflows/node.js.yml)
@@ -7,7 +7,7 @@
 
 ***This project and documentation are a work in progress***.
 
-# @test-runner/web
+# web-runner
 
 Runs the supplied test suite in a headless browser (Chromium).
 
@@ -55,7 +55,7 @@ Completed in 16ms. Pass: 2, fail: 0, skip: 0.
 ## Install
 
 ```
-$ npm install --save-dev @test-runner/web
+$ npm install --save-dev web-runner
 ```
 
 * * *

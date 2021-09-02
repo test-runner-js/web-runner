@@ -1,5 +1,5 @@
 import TestRunner from 'test-runner'
-import WebRunnerCli from '@test-runner/web'
+import WebRunnerCli from 'web-runner'
 import assert from 'assert'
 const a = assert.strict
 

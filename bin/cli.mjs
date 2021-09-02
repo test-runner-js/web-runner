@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import WebRunnerCli from '@test-runner/web'
+import WebRunnerCli from 'web-runner'
 import util from 'util'
 util.inspect.defaultOptions.depth = 6
 util.inspect.defaultOptions.breakLength = process.stdout.columns
